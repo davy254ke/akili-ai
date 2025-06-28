@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AKILI AI - Kenyan Curriculum Assistant</title>
+    <style>
+        :root {
+            --primary: #1a5276;
+            --secondary: #e74c3c;
+        }
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.2em;
+        }
+        .kenya-flag {
+            display: inline-block;
+            width: 30px;
+            height: 20px;
+            background: linear-gradient(
+                0deg,
+                black 33%,
+                red 33% 66%,
+                green 66%
+            );
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        .chat-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: 500px;
+            overflow-y: auto;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            border-radius: 18px;
+            max-width: 80%;
+            position: relative;
+        }
+        .user-message {
+            background-color: #e3f2fd;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+        .ai-message {
+            background-color: #f0f0f0;
+            margin-right: auto;
+            border-bottom-left-radius: 5px;
+        }
+        .source {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        .input-area {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        select, input, button {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        select {
+            flex: 1;
+            background-color: white;
+        }
+        input {
+            flex: 3;
+        }
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #154360;
+        }
+        @media (max-width: 600px) {
+            .input-area {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><span class="kenya-flag"></span>AKILI AI</h1>
+        <p>Your Kenyan Secondary School Learning Assistant</p>
+    </header>
+
+    <div class="chat-container" id="chat">
+        <div class="message ai-message">
+            <p>Habari! I'm AKILI AI. Ask me anything about the Kenyan 8-4-4 or CBC curriculum for Forms 1-4.</p>
+            <p class="source">Try: "Explain photosynthesis" or "Form 2 algebra"</p>
+        </div>
+    </div>
+
+    <div class="input-area">
+        <select id="subject">
+            <option value="">All Subjects</option>
+            <option value="math">Mathematics</option>
+            <option value="english">English</option>
+            <option value="kiswahili">Kiswahili</option>
+            <option value="biology">Biology</option>
+            <option value="chemistry">Chemistry</option>
+            <option value="physics">Physics</option>
+            <option value="history">History & Govt</option>
+            <option value="geography">Geography</option>
+        </select>
+
+        <select id="form">
+            <option value="">All Forms</option>
+            <option value="form1">Form 1</option>
+            <option value="form2">Form 2</option>
+            <option value="form3">Form 3</option>
+            <option value="form4">Form 4</option>
+        </select>
+
+        <input type="text" id="question" placeholder="Ask about Kenyan curriculum...">
+        <button id="ask-button">Ask</button>
+    </div>
+
+    <script>
+        // Kenyan Curriculum Knowledge Base
+        const KENYAN_KNOWLEDGE = {
+            "math": {
+                "form1": {
+                    "algebra": "In Form 1 Mathematics (Kenyan curriculum), algebra introduces...",
+                    "fractions": "Fractions are covered in Term 2. Key concepts include..."
+                },
+                "form2": {
+                    "quadratic equations": "Quadratic equations appear in Form 2 math. The Kenyan syllabus requires..."
+                }
+            },
+            "biology": {
+                "form2": {
+                    "photosynthesis": "Photosynthesis is a key topic in Form 2 Biology. KNEC expects students to..."
+                }
+            }
+        };
+
+        document.getElementById('ask-button').addEventListener('click', askQuestion);
+        document.getElementById('question').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') askQuestion();
+        });
+
+        function askQuestion() {
+            const question = document.getElementById('question').value.trim();
+            const subject = document.getElementById('subject').value;
+            const form = document.getElementById('form').value;
+            const chat = document.getElementById('chat');
+
+            if (!question) return;
+
+            // Add user question to chat
+            chat.innerHTML += `
+                <div class="message user-message">
+                    <p>${question}</p>
+                    ${subject ? `<p class="source">Subject: ${subject.charAt(0).toUpperCase() + subject.slice(1)}</p>` : ''}
+                </div>
+            `;
+
+            // Clear input
+            document.getElementById('question').value = '';
+
+            // Simulate thinking
+            chat.innerHTML += `
+                <div class="message ai-message">
+                    <p>🔍 Searching Kenyan curriculum...</p>
+                </div>
+            `;
+            chat.scrollTop = chat.scrollHeight;
+
+            // Process after short delay
+            setTimeout(() => {
+                // Remove "searching" message
+                chat.removeChild(chat.lastChild);
+
+                let answer = "";
+                let source = "AKILI Knowledge Base";
+
+                // Check if answer exists in knowledge base
+                if (subject && form && KENYAN_KNOWLEDGE[subject]?.[form]) {
+                    for (const [topic, content] of Object.entries(KENYAN_KNOWLEDGE[subject][form])) {
+                        if (question.toLowerCase().includes(topic)) {
+                            answer = content;
+                            source = `KCSE ${subject.charAt(0).toUpperCase() + subject.slice(1)} Form ${form.slice(-1)}`;
+                            break;
+                        }
+                    }
+                }
+
+                if (!answer) {
+                    answer = `I'm learning more about "${question}" in the Kenyan ${subject ? subject + ' ' : ''}curriculum. Check back soon for updates!`;
+                    source = "AKILI AI";
+                }
+
+                // Add AI response
+                chat.innerHTML += `
+                    <div class="message ai-message">
+                        <p>${answer}</p>
+                        <p class="source">Source: ${source}</p>
+                    </div>
+                `;
+
+                chat.scrollTop = chat.scrollHeight;
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
